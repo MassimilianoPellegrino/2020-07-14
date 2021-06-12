@@ -5,9 +5,15 @@
 package it.polito.tdp.PremierLeague;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import org.jgrapht.Graphs;
+
 import it.polito.tdp.PremierLeague.model.Model;
+import it.polito.tdp.PremierLeague.model.Team;
+import it.polito.tdp.PremierLeague.model.TeamPoints;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -35,7 +41,7 @@ public class FXMLController {
     private Button btnSimula; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbSquadra"
-    private ComboBox<?> cmbSquadra; // Value injected by FXMLLoader
+    private ComboBox<Team> cmbSquadra; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtN"
     private TextField txtN; // Value injected by FXMLLoader
@@ -48,12 +54,37 @@ public class FXMLController {
 
     @FXML
     void doClassifica(ActionEvent event) {
+    	this.txtResult.clear();
+    	Team t;
+    	try {
+    		t = cmbSquadra.getValue();
+    		this.txtResult.appendText("Squadre battute da "+t+":\n\n");
+    		for(Team team: Graphs.successorListOf(model.getGrafo(), t)) {
+    			this.txtResult.appendText(team+" "+model.getGrafo().getEdgeWeight(model.getGrafo().getEdge(t, team))+"\n");
+    		}
+    		this.txtResult.appendText("\nSquadre che hanno battuto "+t+":\n\n");
+    		List<TeamPoints> list = new ArrayList<>(); 
+    		for(Team team: Graphs.predecessorListOf(model.getGrafo(), t)) {
+    			list.add(0, new TeamPoints(team, model.getGrafo().getEdgeWeight(model.getGrafo().getEdge(team, t))));
+    		}
+    		for(TeamPoints tp: list)
+    			this.txtResult.appendText(tp+"\n");
+    			
+    	}catch(NullPointerException e) {
+    		this.txtResult.setText("Selezionare una squadra");
+    	}
 
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	model.creaGrafo();
+    	this.cmbSquadra.getItems().addAll(model.getIdMap().values());
+    	
+    	this.txtResult.setText("Grafo creato con "+model.getGrafo().vertexSet().size()+" vertici e "+model.getGrafo().edgeSet().size()+" archi");
+    	
+    	btnClassifica.setDisable(false);	
     }
 
     @FXML
@@ -70,6 +101,8 @@ public class FXMLController {
         assert txtN != null : "fx:id=\"txtN\" was not injected: check your FXML file 'Scene.fxml'.";
         assert txtX != null : "fx:id=\"txtX\" was not injected: check your FXML file 'Scene.fxml'.";
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Scene.fxml'.";
+        this.btnClassifica.setDisable(true);
+        this.btnSimula.setDisable(true);
     }
     
     public void setModel(Model model) {

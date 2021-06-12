@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import it.polito.tdp.PremierLeague.model.Action;
+import it.polito.tdp.PremierLeague.model.Arco;
 import it.polito.tdp.PremierLeague.model.Match;
 import it.polito.tdp.PremierLeague.model.Player;
 import it.polito.tdp.PremierLeague.model.Team;
@@ -36,7 +39,7 @@ public class PremierLeagueDAO {
 		}
 	}
 	
-	public List<Team> listAllTeams(){
+	public List<Team> listAllTeams(Map<Integer, Team> map){
 		String sql = "SELECT * FROM Teams";
 		List<Team> result = new ArrayList<Team>();
 		Connection conn = DBConnect.getConnection();
@@ -48,6 +51,9 @@ public class PremierLeagueDAO {
 
 				Team team = new Team(res.getInt("TeamID"), res.getString("Name"));
 				result.add(team);
+				
+				if(!map.containsKey(team))
+					map.put(res.getInt("TeamID"), team);
 			}
 			conn.close();
 			return result;
@@ -111,5 +117,7 @@ public class PremierLeagueDAO {
 			return null;
 		}
 	}
+	
+	
 	
 }
