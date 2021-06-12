@@ -18,6 +18,9 @@ public class TeamPoints {
 	public String toString() {
 		return team+" "+points;
 	}
+	public void setPoints(Double points) {
+		this.points = points;
+	}
 	
 	
 	

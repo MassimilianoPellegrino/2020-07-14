@@ -84,12 +84,25 @@ public class FXMLController {
     	
     	this.txtResult.setText("Grafo creato con "+model.getGrafo().vertexSet().size()+" vertici e "+model.getGrafo().edgeSet().size()+" archi");
     	
-    	btnClassifica.setDisable(false);	
+    	btnClassifica.setDisable(false);
+    	btnSimula.setDisable(false);
     }
 
     @FXML
     void doSimula(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	int N;
+    	int X;
+    	try {
+    		N = Integer.parseInt(txtN.getText());
+    		X = Integer.parseInt(txtX.getText());
+    		model.simula(N, X);
+    		this.txtResult.appendText("Numero medio di reporter per partita: "+model.getTotReporter()/model.getMatches().size()+"\n");
+    		this.txtResult.appendText("Numero di partite con meno reporter della soglia inserita: "+model.getNumPartiteSottoSoglia()+"\n");
+    		
+    	}catch(NumberFormatException e) {
+    		this.txtResult.setText("Inserire numeri interi");
+    	}
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
